@@ -2,6 +2,10 @@
 
 Edición para Ubuntu 26.04 x86-64 con servidor multijugador y cliente de navegador. Empiezas en Aresden con 27 puntos de atributo para repartir. Puedes viajar a Elvine, explorar mazmorras, conseguir botín, comprar hechizos y guardar objetos en el banco.
 
+## Comandos y controles
+
+Consulta la [referencia completa de comandos](COMANDOS.md) para iniciar el juego, configurar conexiones por IP, usar los controles de jugador y administrador, compilar, conservar partidas y publicar el código en GitHub. Incluye todas las opciones del script de subida y el estado de las herramientas de desarrollo.
+
 ## Jugar
 
 ```bash
