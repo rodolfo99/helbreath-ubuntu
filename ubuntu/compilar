@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd -- "$(dirname -- "$0")/.." && pwd)
+for tool in node npm dotnet protoc; do
+    command -v "$tool" >/dev/null || { echo "Falta $tool. Ejecuta ./helbreath dependencias." >&2; exit 1; }
+done
+case "$(uname -m)" in
+    x86_64) rid=linux-x64 ;;
+    aarch64) rid=linux-arm64 ;;
+    *) echo "Arquitectura sin configuración de publicación: $(uname -m)" >&2; exit 1 ;;
+esac
+for client in sp-client multiplayer/mp-client; do
+    (
+        cd "$root/$client"
+        npm ci --no-audit --no-fund
+        npm run build
+    )
+done
+dotnet publish "$root/multiplayer/server/Server.csproj" -c Release -r "$rid" --self-contained true \
+    -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:DebugType=None \
+    -o "$root/bin/$rid"

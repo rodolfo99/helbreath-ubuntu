@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd -- "$(dirname -- "$0")" && pwd)
+cmd=${1:-jugar}
+if (($#)); then shift; fi
+case "$cmd" in
+    dependencias)
+        sudo apt-get update
+        exec sudo apt-get install -y nodejs npm dotnet-sdk-10.0 protobuf-compiler python3 ca-certificates
+        ;;
+    compilar) exec "$root/ubuntu/compilar" "$@" ;;
+    recursos) exec python3 "$root/ubuntu/recursos.py" "$@" ;;
+    jugar|solo|admin)
+        port=${PUERTO:-1337}
+        if [[ ! $port =~ ^[1-9][0-9]{0,4}$ ]] || ((port > 65535)); then
+            echo "PUERTO debe ser un número entre 1 y 65535." >&2; exit 1
+        fi
+        dist="$root/multiplayer/mp-client/dist"
+        [[ -f "$dist/index.html" ]] || { echo "Primero ejecuta ./helbreath compilar." >&2; exit 1; }
+        case "$(uname -m)" in
+            x86_64) rid=linux-x64 ;;
+            aarch64) rid=linux-arm64 ;;
+            *) echo "Arquitectura no reconocida." >&2; exit 1 ;;
+        esac
+        server="$root/bin/$rid/Server"
+        [[ -x "$server" ]] || { echo "Compila el servidor para este equipo con ./helbreath dependencias y ./helbreath compilar." >&2; exit 1; }
+        python3 "$root/ubuntu/recursos.py"
+        echo "Abre http://127.0.0.1:$port/ en tu navegador. Para detener el juego usa Ctrl+C."
+        export HELBREATH_SOLO=0
+        export HELBREATH_ENABLE_ADMIN=0
+        [[ $cmd == admin ]] && HELBREATH_ENABLE_ADMIN=1
+        export HELBREATH_CLIENT="$dist" HELBREATH_ASSETS="$root/recursos/cliente"
+        export HELBREATH_MAPS="$root/recursos/mapas-servidor" HELBREATH_URL="http://${ESCUCHAR_EN:-127.0.0.1}:$port"
+        cd "$root/multiplayer/server"
+        exec "$server"
+        ;;
+    -h|--help|ayuda) printf '%s\n' './helbreath jugar | solo | admin | compilar | dependencias | recursos [ruta-al-repositorio]' ;;
+    *) echo "Comando desconocido. Consulta ./helbreath ayuda." >&2; exit 2 ;;
+esac

@@ -1,0 +1,35 @@
+
+
+# Reglas de la importacion de Helbreath: fuentes y ejecutables completos.
+**/node_modules/
+**/__pycache__/
+**/obj/
+/multiplayer/server/Chars/
+/multiplayer/server/bin/
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.npmrc
+.pypirc
+.netrc
+.git-credentials
+*.log
+*.pyc
+*.pyo
+*.tsbuildinfo
+.recursos.lock
+.helbreath-parche-*/
+.importar-*/
+# Mantener los binarios entregados, los clientes web y los recursos presentes.
+!/bin/
+!/bin/*/
+!/bin/*/Server
+/bin/*/Server.gz
+!/multiplayer/mp-client/dist/
+!/multiplayer/mp-client/dist/**
+!/sp-client/dist/
+!/sp-client/dist/**
+!/recursos/
+!/recursos/**
